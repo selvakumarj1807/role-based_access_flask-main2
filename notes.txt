@@ -1,0 +1,11 @@
+1. flask db init
+
+2. flask db migrate -m "Initial migration"
+
+3. flask db upgrade
+
+4. python create_superadmin.py
+
+5. python rehash_passwords.py
+
+6. flask run
