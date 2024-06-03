@@ -27,13 +27,17 @@ def role_required(role_name):
         return decorated_function
     return decorator
 
-def permission_required(perm_name):
+def permissions_required(*permissions):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            if not current_user.is_authenticated or not has_permission(current_user, perm_name):
-                flash('Access denied. You do not have the required permission to access this page.', 'danger')
-                return redirect(url_for('home'))
+            if not current_user.is_authenticated:
+                flash('You need to be logged in to access this page.', 'danger')
+                return redirect(url_for('login'))  # Adjust to your login endpoint
+            for perm_name in permissions:
+                if not has_permission(current_user, perm_name):
+                    flash('Access denied. You do not have the required permissions to access this page.', 'danger')
+                    return redirect(url_for('home'))  # Adjust to your home endpoint
             return f(*args, **kwargs)
         return decorated_function
     return decorator
