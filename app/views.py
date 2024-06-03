@@ -1,7 +1,5 @@
-# views.py
-
 from flask import render_template, url_for, flash, redirect, request
-from app import app, db, bcrypt
+from app import app, db
 from flask_login import login_user, current_user, logout_user, login_required
 from app.utils import is_superadmin, is_admin, is_user, has_permission
 from app.models import User, Role, Permission
@@ -28,8 +26,8 @@ def register():
             flash('Invalid role.', 'danger')
             return redirect(url_for('register'))
 
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        user = User(username=username, email=email, password_hash=hashed_password)
+        user = User(username=username, email=email)
+        user.set_password(password)
         user.roles.append(role)
         db.session.add(user)
         db.session.commit()
@@ -44,7 +42,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        if user and bcrypt.check_password_hash(user.password_hash, form.password.data):
+        if user and user.check_password(form.password.data):
             login_user(user, remember=True)
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('home'))
@@ -99,7 +97,6 @@ def manage_roles():
     permissions = Permission.query.all()
     return render_template('manage_roles.html', form=form, roles=roles, permissions=permissions)
 
-
 @app.route('/user_dashboard')
 @login_required
 def user_dashboard():
@@ -116,7 +113,6 @@ def admin_dashboard():
     # Retrieve only users with the role name "User" from the database
     users = User.query.filter(User.roles.any(Role.role_name == 'User')).all()
     return render_template('admin_dashboard.html', users=users)
-
 
 @app.route('/delete_user/<int:user_id>', methods=['POST'])
 @login_required

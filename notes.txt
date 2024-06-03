@@ -6,6 +6,4 @@
 
 4. python create_superadmin.py
 
-5. python rehash_passwords.py
-
-6. flask run
+5. flask run
