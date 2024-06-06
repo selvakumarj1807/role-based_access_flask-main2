@@ -1,6 +1,6 @@
 1. pip install requirements.txt
 
-2. database change for config.py, .env, run.py files
+2. database_name change for config.py, .env, run.py files
 
 3. flask db init
 
@@ -11,3 +11,7 @@
 6. python create_superadmin.py
 
 7. flask run
+
+8. email : superadmin@example.com
+
+9. password : superadminpassword
